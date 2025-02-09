@@ -5,6 +5,7 @@ import { RenderPass } from "../node_modules/three/examples/jsm/postprocessing/Re
 import { ShaderPass } from "../node_modules/three/examples/jsm/postprocessing/ShaderPass.js";
 import { RGBShiftShader } from "../node_modules/three/examples/jsm/shaders/RGBShiftShader.js";
 import { GammaCorrectionShader } from "../node_modules/three/examples/jsm/shaders/GammaCorrectionShader.js";
+import { log } from "three/examples/jsm/nodes/Nodes.js";
 
 const METALNESS_PATH = "https://res.cloudinary.com/dg5nsedzw/image/upload/v1641657200/blog/vaporwave-threejs-textures/metalness.png";
 
@@ -62,6 +63,21 @@ planeFront.position.z = 0.15;
 const planeBack = planeFront.clone();
 scene.add(planeBack);
 
+// ROTATING CUBE
+const cube = new THREE.Mesh(
+  new THREE.BoxGeometry(.2, .2, .2),
+  new THREE.MeshStandardMaterial({
+    color: 0xff5500,
+    map: gridTexture,
+    metalnessMap: metalnessTexture,
+    metalness: .4,
+  }),
+);
+cube.position.y = .19;
+cube.position.z = 0;
+scene.add(cube);
+
+
 // POST PROCESSING
 const composer = new EffectComposer(renderer);
 const renderPass = new RenderPass(scene, camera);
@@ -108,8 +124,15 @@ function animation(time) {
 
   requestAnimationFrame(animation);
   
+  // Animation cube
+  cube.rotation.x += 0.01;
+  cube.rotation.y += 0.01;
+
+
+  // Animation plateforme
   planeFront.position.z = (elapsedTime * 0.15) % 2;
   planeBack.position.z = ((elapsedTime * 0.15) % 2) - 2;
+  console.log(camera.position);
 
   controle.update();
   composer.render();
